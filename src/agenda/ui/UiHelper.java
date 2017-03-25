@@ -1,101 +1,115 @@
 package agenda.ui;
 
-import java.util.Scanner;
+import agenda.Contato;
 
 public class UiHelper {
-    private static final int TITLE_WIDTH = 80;
-    private Scanner scanner;
+	public static void printTitle(String title) {
 
-    public UiHelper(Scanner scanner) {
-	this.scanner = scanner;
-    }
+		StringBuilder out = new StringBuilder();
+		out.append("\n");
 
-    public void printTitle(String title) {
-	if (title.length() + 4 >= TITLE_WIDTH) {
-	    throw new IllegalStateException("O título não irá caber, aumente o TITLE_WIDTH");
+		String rule = repeat("=", title.length() + 2);
+
+		out.append(rule);
+		out.append("\n");
+		out.append("# ");
+
+		out.append(title);
+
+		out.append("\n");
+		out.append(rule);
+		out.append("\n");
+
+		System.out.println(out.toString());
 	}
 
-	int padr = (TITLE_WIDTH - title.length()) / 2 - 1; // +2 por causa dos
-							   // '#'
-	int padl = title.length() % 2 == 0 ? padr : (padr + 1); // Se o Título
-								// for impar
-								// deixamos um '
-								// ' a mais no
-								// padding left
+	public static String repeat(String str, int count) {
+		StringBuilder stb = new StringBuilder();
 
-	StringBuilder out = new StringBuilder();
-	out.append("\n");
+		for (int i = 0; i < count; i++) {
+			stb.append(str);
+		}
 
-	String rule = repeat("=", TITLE_WIDTH);
-
-	out.append(rule);
-	out.append("\n");
-	out.append("#");
-
-	out.append(repeat(" ", padr));
-	out.append(title);
-	out.append(repeat(" ", padl));
-
-	out.append("#");
-	out.append("\n");
-	out.append(rule);
-	out.append("\n");
-
-	System.out.println(out.toString());
-    }
-
-    public static String repeat(String str, int count) {
-	StringBuilder stb = new StringBuilder();
-
-	for (int i = 0; i < count; i++) {
-	    stb.append(str);
+		return stb.toString();
 	}
 
-	return stb.toString();
-    }
+	public static String requiredString(String label) {
+		return requiredString(label, null, null);
+	}
 
-    public String requiredString(String label) {
-	StringBuilder msg = new StringBuilder();
-	msg.append("\n");
-	msg.append(label);
-	msg.append("\n$> ");
+	public static String requiredString(String label, PatternInput pattern, String validationMsg) {
+		StringBuilder msg = new StringBuilder();
+		msg.append(label);
+		msg.append("\n$> ");
 
-	String input = null;
+		String input = null;
 
-	do {
-	    System.out.println(msg.toString());
-	    input = scanner.nextLine();
+		do {
+			System.out.print(msg.toString());
+			input = System.console().readLine();
 
-	    if (input != null && input.trim().length() == 0) {
+			if (input != null && input.trim().length() > 0) {
+
+				if (pattern == null) {
+					break;
+				}
+
+				if (input.matches(pattern.regex)) {
+					break;
+				}
+			}
+
+			if (validationMsg == null) {
+				System.out.println("\nValor inválido!");
+			} else {
+				System.out.println(validationMsg);
+			}
+		} while (true);
+
 		return input;
-	    }
-
-	    System.out.println("\nValor inválido!");
-	} while (true);
-    }
-
-    public static String padl(Object value, int width, char fill) {
-	StringBuffer valstr = new StringBuffer((value != null) ? value.toString() : "");
-
-	if (valstr.length() > 0) {
-	    int last = 0;
-	    // fazemos um LTRIM para evitar problemas de perda de informação
-	    // valiosa por conta de chamadas encadeadas a PADL
-	    while (last < valstr.length() && valstr.charAt(last) == fill) {
-		last++;
-	    }
-
-	    valstr.delete(0, last);
 	}
 
-	if (valstr.length() < width) {
-	    while (valstr.length() < width) {
-		valstr.insert(0, fill);
-	    }
-	} else {
-	    valstr.delete(width, valstr.length());
-	}
+	public static String padl(Object value, int width, char fill) {
+		StringBuffer valstr = new StringBuffer((value != null) ? value.toString() : "");
 
-	return valstr.toString();
-    }
+		if (valstr.length() > 0) {
+			int last = 0;
+			while (last < valstr.length() && valstr.charAt(last) == fill) {
+				last++;
+			}
+
+			valstr.delete(0, last);
+		}
+
+		if (valstr.length() < width) {
+			while (valstr.length() < width) {
+				valstr.insert(0, fill);
+			}
+		} else {
+			valstr.delete(width, valstr.length());
+		}
+
+		return valstr.toString();
+	}
+	
+	public static enum PatternInput{
+		CELULAR("(?:\\d+){7,9}"), //Pra precisar não digitar (xx) xxxxx-xxxxx
+		EMAIL("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"); //Precisa melhorar?  copia a regex daqui ó: http://emailregex.com/
+		
+		private String regex;
+		
+		private PatternInput(String regex) {
+			this.regex = regex;
+		}
+	}
+	
+	public static void print(Contato contato){
+		FormPrinter fp = new FormPrinter();
+		fp.put("Nome", contato.getNome());
+		fp.put("Celuar", contato.getCelular());
+		fp.put("Email", contato.getEmail());
+		
+		System.out.println(fp.asString());
+	}
+	
 }

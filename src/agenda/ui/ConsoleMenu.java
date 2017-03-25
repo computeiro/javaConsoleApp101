@@ -6,10 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * @author rodrigo
- *
- */
 public class ConsoleMenu {
     private List<ItemMenu> itens;
     private Set<Integer> optionsSet;
@@ -176,21 +172,5 @@ public class ConsoleMenu {
     private class ItemMenu {
 	private String label;
 	private int index;
-
-	public int getIndex() {
-	    return index;
-	}
-
-	public String getLabel() {
-	    return label;
-	}
-
-	public void setIndex(int index) {
-	    this.index = index;
-	}
-
-	public void setLabel(String label) {
-	    this.label = label;
-	}
     }
 }
