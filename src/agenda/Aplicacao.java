@@ -2,8 +2,12 @@ package agenda;
 
 import java.util.Scanner;
 
+import agenda.ui.UiHelper;
+
 public class Aplicacao {
-    private Scanner leitura;
+    private Scanner scanner;
+    private ArvoreAVL arvore;
+    private UiHelper uiHelper;
 
     // Se tiver problemas com acentuação converta o código de cp1252 para UTF-8
     // (sem BOM)
@@ -14,18 +18,23 @@ public class Aplicacao {
 	app.execute();
     }
 
+    public Aplicacao() {
+	arvore = new ArvoreAVL();
+    }
+
     public void execute() {
 	// Não, para isso inicializamos (null) e fazemos um try{ ... }finally{
 	// close()}
 	// Isso sempre acontece com ZipFile, FileInpustream e 'tudo' que termine
 	// em Stream e/ou implementa Closeable
 	try {
-
+	    scanner = new Scanner(System.in);
+	    uiHelper = new UiHelper(scanner);
 	    // StringBuilder é uma opção mais organizada e performática que
 	    // "ficar" + "concatenando" + "String" + "(com +)"
 	    StringBuilder menu = new StringBuilder();
-
-	   UiUtils.printTitle("Cadastro de Contatos >> Menu Principal");
+	    
+	    uiHelper.printTitle("Cadastro de Contatos >> Menu Principal");
 	    menu.append("  [1]  Novo contato\n"); // 2.a
 	    menu.append("  [2]  Localizar contato\n"); // 2.b
 	    menu.append("  [3]  Localizar e inserir se não encontrar\n"); // 2.c
@@ -40,11 +49,10 @@ public class Aplicacao {
 	    menu.append("  Digite uma opção $> "); // 2.f
 
 	    int opcao = -1; // corresponde a um item do menu
-	    leitura = new Scanner(System.in);
 
 	    do {
 		System.out.print(menu.toString());
-		opcao = leitura.nextInt();
+		opcao = scanner.nextInt();
 
 		switch (opcao) {
 		case 1:
@@ -77,14 +85,20 @@ public class Aplicacao {
 				 // não
 	} finally {
 	    try {
-		leitura.close();
+		scanner.close();
 	    } catch (Exception ignored) {
 	    }
 	}
     }
 
     private void cadastrarContato() {
-	
+	ContatoNoh contatoNoh = new ContatoNoh();
+
+	contatoNoh.setNome(uiHelper.requiredString("Digite o nome:"));
+	contatoNoh.setCelular(uiHelper.requiredString("Digite o celular:"));
+	contatoNoh.setNome(uiHelper.requiredString("Digite o email:"));
+
+	arvore.inserir(contatoNoh);
     }
 
 }

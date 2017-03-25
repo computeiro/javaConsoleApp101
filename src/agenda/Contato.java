@@ -1,9 +1,9 @@
 package agenda;
 
 public class Contato {
-    private String nome;
-    private String celular;
-    private String email;
+    protected String nome;
+    protected String celular;
+    protected String email;
     
     public String getNome() {
         return nome;
