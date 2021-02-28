@@ -1,5 +1,3 @@
-## pitagoras_eadII
-Trabalho de Algoritmos e EAD II
+## Java Console Application
 
-Estrutura básica de uma aplicação console Java para fins didáticos
-Menus e algumas opções já estão implementadas
+Construção de um menu interativo numa aplicação Java Console, o exemplo possui a implementação da estrutura de dados árvore, mas é apenas ilustrativo. Ideal para alunos que estão começando a entender sobre Java, aplicações console  sem despender tempo com aprendizado de interfaces gráficas.
